@@ -105,12 +105,12 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
             // If focus and target point is locked, we're sticking to the target
             // So don't clamp the world length
-            if (IsFocusLocked && IsTargetPositionLockedOnFocusLock)
-            {
-                float cursorOffsetLocalLength = LineBase.GetNormalizedLengthFromWorldLength(cursorOffsetWorldLength);
-                LineBase.LineEndClamp = 1 - cursorOffsetLocalLength;
-            }
-            else
+            //if (IsFocusLocked && IsTargetPositionLockedOnFocusLock)
+            //{
+            //    float cursorOffsetLocalLength = LineBase.GetNormalizedLengthFromWorldLength(cursorOffsetWorldLength);
+            //    LineBase.LineEndClamp = 1 - cursorOffsetLocalLength;
+            //}
+            //else
             {
                 // Otherwise clamp the line end by the clear distance
                 float clearLocalLength = LineBase.GetNormalizedLengthFromWorldLength(clearWorldLength - cursorOffsetWorldLength, maxClampLineSteps);
@@ -125,15 +125,18 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
             if (IsFocusLocked && IsTargetPositionLockedOnFocusLock)
             {
-                inertia.enabled = false;
-                // Project forward based on pointer direction to get an 'expected' position of the first control point
-                Vector3 expectedPoint = startPoint + Rotation * Vector3.forward * distance;
-                // Lerp between the expected position and the expected point
-                LineBase.SetPoint(1, Vector3.Lerp(startPoint, expectedPoint, startPointLerp));
-                // Get our next 'expected' position by lerping between the expected point and the end point
-                // The result will be a line that starts moving in the pointer's direction then bends towards the target
-                expectedPoint = Vector3.Lerp(expectedPoint, endPoint, endPointLerp);
-                LineBase.SetPoint(2, Vector3.Lerp(startPoint, expectedPoint, endPointLerp));
+                if (LineBase.PointCount > 2)
+                {
+                    inertia.enabled = false;
+                    // Project forward based on pointer direction to get an 'expected' position of the first control point
+                    Vector3 expectedPoint = startPoint + Rotation * Vector3.forward * distance;
+                    // Lerp between the expected position and the expected point
+                    LineBase.SetPoint(1, Vector3.Lerp(startPoint, expectedPoint, startPointLerp));
+                    // Get our next 'expected' position by lerping between the expected point and the end point
+                    // The result will be a line that starts moving in the pointer's direction then bends towards the target
+                    expectedPoint = Vector3.Lerp(expectedPoint, endPoint, endPointLerp);
+                    LineBase.SetPoint(2, Vector3.Lerp(startPoint, expectedPoint, endPointLerp));
+                }
             }
             else
             {
