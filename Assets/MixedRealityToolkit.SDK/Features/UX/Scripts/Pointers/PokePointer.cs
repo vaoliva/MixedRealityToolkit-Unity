@@ -9,6 +9,15 @@ namespace Microsoft.MixedReality.Toolkit.Input
     public class PokePointer : BaseControllerPointer, IMixedRealityNearPointer
     {
         [SerializeField]
+        protected float distBack;
+
+        [SerializeField]
+        protected float distFront;
+
+        [SerializeField]
+        protected float debounceThreshold;
+
+        [SerializeField]
         protected LineRenderer line;
 
         [SerializeField]
@@ -16,11 +25,9 @@ namespace Microsoft.MixedReality.Toolkit.Input
         
         private float closestDistance = 0.0f;
 
-        private Vector3 closestNormal = Vector3.forward;
-
         // The closest touchable component limits the set of objects which are currently touchable.
         // These are all the game objects in the subtree of the closest touchable component's owner object.
-        private BaseNearInteractionTouchable closestProximityTouchable = null;
+        private NearInteractionTouchable closestProximityTouchable = null;
         // The current object that is being touched. We need to make sure to consistently fire 
         // poke-down / poke-up events for this object. This is also the case when the object within
         // the same current closest touchable component's changes (e.g. Unity UI control elements).
@@ -28,6 +35,9 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
         protected void OnValidate()
         {
+            Debug.Assert(distBack > 0, this);
+            Debug.Assert(distFront > 0, this);
+            Debug.Assert(debounceThreshold > 0, this);
             Debug.Assert(line != null, this);
             Debug.Assert(visuals != null, this);
         }
@@ -44,38 +54,36 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 Rays = new RayStep[1];
             }
 
-            closestNormal = Rotation * Vector3.forward;
-
             // Check proximity
-            BaseNearInteractionTouchable newClosestTouchable = null;
+            NearInteractionTouchable newClosestTouchable = null;
             {
-                closestDistance = float.PositiveInfinity;
-                foreach (var prox in BaseNearInteractionTouchable.Instances)
+                closestDistance = distFront; // NOTE: Start at distFront for cutoff
+                foreach (var prox in NearInteractionTouchable.Instances)
                 {
                     if (prox.ColliderEnabled)
                     {
-                        Vector3 normal;
-                        float dist = prox.DistanceToTouchable(Position, out normal);
-                        if (dist < closestDistance)
-                        {   
-                            closestDistance = dist;
-                            newClosestTouchable = prox;
-                            closestNormal = normal;
-                        }
+                       float dist = prox.DistanceToSurface(Position);
+                       if (dist < closestDistance)
+                       {
+   
+                           closestDistance = dist;
+                           newClosestTouchable = prox;
+                       }
                     }
                 }
             }
 
+            // Determine ray direction
+            Vector3 rayDirection = Rotation * Vector3.forward;
             if (newClosestTouchable != null)
             {
-                // Build ray (poke from in front to the back of the pointer position)
-                Vector3 start = Position - newClosestTouchable.DistBack * -closestNormal;
-                Vector3 end = Position + newClosestTouchable.DistFront * -closestNormal;
-                Rays[0].UpdateRayStep(ref start, ref end);
-
-                line.SetPosition(0, Position);
-                line.SetPosition(1, end);
+                rayDirection = -newClosestTouchable.Forward;
             }
+
+            // Build ray (poke from in front to the back of the pointer position)
+            Vector3 start = Position - distBack * rayDirection;
+            Vector3 end = Position + distFront * rayDirection;
+            Rays[0].UpdateRayStep(ref start, ref end);
 
             // Check if the currently touched object is still part of the new touchable.
             if (currentTouchableObjectDown != null)
@@ -85,6 +93,9 @@ namespace Microsoft.MixedReality.Toolkit.Input
                     TryRaisePokeUp(Result.CurrentPointerTarget, Position);
                 }
             }
+
+            line.SetPosition(0, Position);
+            line.SetPosition(1, end);
 
             // Set new touchable only now: If we have to raise a poke-up event for the previous touchable object,
             // we need to do so using the previous touchable in TryRaisePokeUp().
@@ -104,24 +115,16 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
             if (Result?.CurrentPointerTarget != null)
             {
-                float distToFront = Vector3.Distance(Result.StartPoint, Result.Details.Point) - closestProximityTouchable.DistBack;
-                bool newIsDown = (distToFront < 0);
-                bool newIsUp = (distToFront > closestProximityTouchable.DebounceThreshold);
+                float dist = Vector3.Distance(Result.StartPoint, Result.Details.Point) - distBack;
+                bool newIsDown = (dist < debounceThreshold);
 
                 if (newIsDown)
                 {
                     TryRaisePokeDown(Result.CurrentPointerTarget, Position);
                 }
-                else if (currentTouchableObjectDown != null)
+                else
                 {
-                    if (newIsUp)
-                    {
-                        TryRaisePokeUp(Result.CurrentPointerTarget, Position);
-                    }
-                    else
-                    {
-                        TryRaisePokeDown(Result.CurrentPointerTarget, Position);
-                    }
+                    TryRaisePokeUp(Result.CurrentPointerTarget, Position);
                 }
             }
 
@@ -213,7 +216,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             }
         }
 
-        private static bool IsObjectPartOfTouchable(GameObject targetObject, BaseNearInteractionTouchable touchable)
+        private static bool IsObjectPartOfTouchable(GameObject targetObject, NearInteractionTouchable touchable)
         {
             return targetObject != null && touchable != null &&
                 (targetObject == touchable.gameObject ||
@@ -240,7 +243,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// <inheritdoc />
         bool IMixedRealityNearPointer.TryGetNormalToNearestSurface(out Vector3 normal)
         {
-            normal = closestNormal;
+            normal = (closestProximityTouchable != null) ? closestProximityTouchable.Forward : Vector3.forward;
             return true;
         }
 
