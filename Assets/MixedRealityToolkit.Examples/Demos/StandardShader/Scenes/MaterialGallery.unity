@@ -2487,7 +2487,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4753320988497866, guid: a900c08743a94c328074df8bbe3eb63c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.248
+      value: 1.296
       objectReference: {fileID: 0}
     - target: {fileID: 4753320988497866, guid: a900c08743a94c328074df8bbe3eb63c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2516,11 +2516,6 @@ PrefabInstance:
     - target: {fileID: 4753320988497866, guid: a900c08743a94c328074df8bbe3eb63c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: -45
-      objectReference: {fileID: 0}
-    - target: {fileID: 114186135864427680, guid: a900c08743a94c328074df8bbe3eb63c,
-        type: 3}
-      propertyPath: m_Text
-      value: ClipPlane.cs
       objectReference: {fileID: 0}
     - target: {fileID: 114107642412081004, guid: a900c08743a94c328074df8bbe3eb63c,
         type: 3}
@@ -2552,6 +2547,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Text
       value: MixedRealityStandard.shader
+      objectReference: {fileID: 0}
+    - target: {fileID: 114186135864427680, guid: a900c08743a94c328074df8bbe3eb63c,
+        type: 3}
+      propertyPath: m_Text
+      value: ClipPlane.cs
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a900c08743a94c328074df8bbe3eb63c, type: 3}
@@ -3980,7 +3980,7 @@ PrefabInstance:
     - target: {fileID: 8503270331930508642, guid: c0931c4da6d91ea429abedb10290dd16,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.3484
+      value: 1.153
       objectReference: {fileID: 0}
     - target: {fileID: 8503270331930508642, guid: c0931c4da6d91ea429abedb10290dd16,
         type: 3}
@@ -5452,7 +5452,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1229001241}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.043637, y: -0.9016, z: 1.088}
+  m_LocalPosition: {x: 0.043637, y: 0.695, z: 1.088}
   m_LocalScale: {x: 0.21048994, y: 0.21048994, z: 0.21048994}
   m_Children:
   - {fileID: 1792573422}
