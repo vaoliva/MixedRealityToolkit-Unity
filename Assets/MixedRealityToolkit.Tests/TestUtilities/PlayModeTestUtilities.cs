@@ -124,16 +124,35 @@ namespace Microsoft.MixedReality.Toolkit.Tests
         /// </summary>
         public static void TearDown()
         {
-            TestUtilities.ShutdownMixedRealityToolkit();
 
+           // problem here are two, playspace shutdown cannot happen after playspace object is destroyed
+           // mxrt needs to be destroyed after scrollablecollection is destroyed
             Scene playModeTestScene = SceneManager.GetSceneByName(playModeTestSceneName);
+            TestUtilities.ShutdownMixedRealityToolkit();
+            //GameObject mr = null;
+
             if (playModeTestScene.isLoaded)
-            {
+            {               
                 foreach (GameObject gameObject in playModeTestScene.GetRootGameObjects())
                 {
-                    GameObject.Destroy(gameObject);
+
+                  // var ScrollingObjectCollectio
+                   // if (gameObject.GetComponent<MixedRealityToolkit>())
+                   // {
+                   //     mr = gameObject;
+                   // }
+                   // else if(gameObject.name!= "MixedRealityPlayspace")
+                  //  {
+                        GameObject.DestroyImmediate(gameObject);
+                  //  }
                 }
+                
             }
+
+            //TestUtilities.ShutdownMixedRealityToolkit();
+            //if (mr != null) GameObject.DestroyImmediate(mr);
+
+
 
             // If we created a temporary untitled scene in edit mode to get us started, unload that now
             for (int i = 0; i < SceneManager.sceneCount; i++)

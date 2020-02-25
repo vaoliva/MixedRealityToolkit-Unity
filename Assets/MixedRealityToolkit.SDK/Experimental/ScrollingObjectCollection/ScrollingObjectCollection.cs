@@ -1041,7 +1041,8 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.UI
         private void OnDisable()
         {
             //Unregister global input events
-            if (CoreServices.InputSystem != null)
+            var imris = CoreServices.InputSystem;
+            if (imris != null)
             {
                 CoreServices.InputSystem.UnregisterHandler<IMixedRealityInputHandler>(this);
                 CoreServices.InputSystem.UnregisterHandler<IMixedRealityTouchHandler>(this);

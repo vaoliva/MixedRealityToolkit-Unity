@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.MixedReality.Toolkit.Boundary;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Microsoft.MixedReality.Toolkit.Input
 {
@@ -53,6 +55,8 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
         void IMixedRealityPointerHandler.OnPointerDown(MixedRealityPointerEventData eventData)
         {
+                                  ExecuteEvents.ExecuteHierarchy<IMixedRealityPointerHandler>(gameObject.transform.parent.gameObject, eventData, OnPointerClickedPropagated);
+            gameObject.GetComponent<Renderer>().material.color = Color.black;
             if (!eventData.used)
             {
                 OnPointerDown.Invoke(eventData);
@@ -74,8 +78,20 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 }
             }
         }
+
+        private static readonly ExecuteEvents.EventFunction<IMixedRealityPointerHandler> OnPointerClickedPropagated =
+            delegate (IMixedRealityPointerHandler handler, BaseEventData eventData)
+            {
+                var pointerEventData = ExecuteEvents.ValidateEventData<MixedRealityPointerEventData>(eventData);
+                handler.OnPointerDown(pointerEventData);
+            };
+
         void IMixedRealityPointerHandler.OnPointerClicked(MixedRealityPointerEventData eventData)
         {
+
+
+         
+        
             if (!eventData.used)
             {
                 OnPointerClicked.Invoke(eventData);

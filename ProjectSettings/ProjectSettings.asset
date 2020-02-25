@@ -668,7 +668,9 @@ PlayerSettings:
   webGLThreadsSupport: 0
   scriptingDefineSymbols:
     1: 
-    14: 
+    4: ARFOUNDATION_PRESENT
+    7: ARFOUNDATION_PRESENT
+    14: DOTNETWINRT_PRESENT
   platformArchitecture:
     iOS: 1
   scriptingBackend:

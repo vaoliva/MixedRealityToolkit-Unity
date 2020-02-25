@@ -4728,7 +4728,7 @@ namespace Microsoft.MixedReality.Toolkit.OpenVR.Headers
         [FieldOffset(0)] public VREvent_Reserved_t reserved;
         [FieldOffset(0)] public VREvent_Controller_t controller;
         [FieldOffset(0)] public VREvent_Mouse_t mouse;
-        [FieldOffset(0)] public VREvent_Scroll_t scroll;
+        [FieldOffset(0)] public VREvent_Scroll_t obj;
         [FieldOffset(0)] public VREvent_Process_t process;
         [FieldOffset(0)] public VREvent_Notification_t notification;
         [FieldOffset(0)] public VREvent_Overlay_t overlay;

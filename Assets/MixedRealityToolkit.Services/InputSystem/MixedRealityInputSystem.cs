@@ -539,7 +539,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// </summary>
         private bool DispatchEventToObjectFocusedByPointer<T>(IMixedRealityPointer mixedRealityPointer, BaseInputEventData baseInputEventData,
             bool modalEventHandled, ExecuteEvents.EventFunction<T> eventHandler) where T : IEventSystemHandler
-        {
+                {
             GameObject focusedObject = FocusProvider?.GetFocusedObject(mixedRealityPointer);
 
             // Handle modal input if one exists
